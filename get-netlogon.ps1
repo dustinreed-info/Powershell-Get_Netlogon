@@ -35,13 +35,3 @@ get-childitem $temp\netlogon*.csv | ? {$_.name -ne "netlogon-combinedresult.csv"
 # send-mailmessage -to $to -from $from -SmtpServer $mail_server -port $port `
 # -Subject $subject -Attachments $temp\netlogon-combinedresult.csv
 
-<<<<<<< HEAD
-=======
-
-send-mailmessage -to $to -from $from -SmtpServer $mail_server -port $port `
--Subject $subject -Attachments $temp\netlogon-combinedresult.csv
-
-
-
-get-childitem $temp\*.csv | ? {$_.name -ne "netlogon-combinedresult.csv" } | remove-item 
->>>>>>> b5486227fbffac5c36ce12bf6b5a0f0d32be527f
