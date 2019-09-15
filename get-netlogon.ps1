@@ -28,6 +28,7 @@ $strings = "0xC0000064","0xC000006C","0xc000006D","0xC0000071","0xC0000072","0xC
 get-content $temp"\netlogon-combined.csv" | select-string $strings   | out-file $temp"\netlogon-strings.csv"
 
 
+#Formats text so its easier to read.
 $text = [io.file]::readalltext("$temp\netlogon-strings.csv")
 $text.replace("[LOGON] ","").replace("from ","").replace("SamLogon: ","").replace('"','') | out-file "$temp\$results"
 
