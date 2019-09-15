@@ -1,5 +1,5 @@
 #Powershell-Get_Netlogon
-Powershell script to help identify AD Lockouts.  Similar to NLParse from MS Account Lockout and Management Tools that can be ran from the CLI or scheduled task.
+Powershell script to help identify AD Lockouts.  Basically it emulates the Windows Account Lockout tool, NLParse, and allows you to run as scheduled task to generate CSV or email that can help you identify what devices are causing account lockouts.
 
 ##Requirements
 Read permissions to C$ share on Domain Controllers.
