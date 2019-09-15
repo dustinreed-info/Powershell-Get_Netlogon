@@ -11,8 +11,8 @@ remove-item $temp\$results -ErrorAction SilentlyContinue
 # $server1 = ""
 # $server2 = ""
 
-$paths = "C:\temp\netlogon.log","C:\temp\netlogon.bak"
-# $paths = "\\$server1\C$\windows\debug\netlogon.log", "\\$server1\C$\windows\debug\netlogon.bak"
+
+$paths = "\\$server1\C$\windows\debug\netlogon.log", "\\$server1\C$\windows\debug\netlogon.bak"
 
 
 #Combines Netlogon files.
