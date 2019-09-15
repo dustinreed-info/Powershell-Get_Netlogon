@@ -8,11 +8,11 @@ if ((Test-Path $temp) -eq $False) {
 remove-item $temp\$results -ErrorAction SilentlyContinue
 
 #Enter Domain Controllers hostname
-# $server1 = ""
-# $server2 = ""
+# $DC1 = ""
+# $DC2 = ""
 
 
-$paths = "\\$server1\C$\windows\debug\netlogon.log", "\\$server1\C$\windows\debug\netlogon.bak"
+$paths = "\\$DC1\C$\windows\debug\netlogon.log", "\\$DC1\C$\windows\debug\netlogon.bak"
 
 
 #Combines Netlogon files.
