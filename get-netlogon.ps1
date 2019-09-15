@@ -1,37 +1,51 @@
-$result = "netlogon-combinedresult.csv"
-$temp = "c:\temp\test"
-remove-item $temp\$result -ErrorAction SilentlyContinue
-$server1 = ""
-$server2 = ""
-$paths = "C:\temp\netlogon.log" #,"\\$server1\C$\windows\debug\netlogon.bak","\\$server2\C$\windows\debug\netlogon.bak"
-$i = 1
-$to = "whoever@example.com"
-$from = "you@example.com"
-$mail_server = "Youremailserver.tld"
-$port = 25
-$subject = "Your subject here"
+$results = "netlogon-results.csv"
+$temp = "C:\temp\netlogon"
 
+
+if ((Test-Path $temp) -eq $False) {
+    mkdir $temp
+}
+remove-item $temp\$results -ErrorAction SilentlyContinue
+
+#Enter Domain Controllers hostname
+# $server1 = ""
+# $server2 = ""
+
+$paths = "C:\temp\netlogon.log","C:\temp\netlogon.bak"
+# $paths = "\\$server1\C$\windows\debug\netlogon.log", "\\$server1\C$\windows\debug\netlogon.bak"
+
+
+#Combines Netlogon files.
+$i = 1
 foreach ($path in $paths) {  
-    copy-item $path $temp\netlogon$i.csv 
-    import-csv $temp\netlogon$i.csv  | Export-Csv $temp\netlogon-combined.csv -Append -Force
+    Import-Csv $path  | Export-Csv $temp\netlogon-combined.csv -Append -Force -NoTypeInformation
     $i++
 } 
 
-$text = [io.file]::readalltext("$temp\netlogon-combined.csv")
-$text.replace("[LOGON]","").replace("from",",").replace("SamLogon:",",").replace('"','')  | Out-File $temp\netlogon.csv
+
+#Selects exceptions related to lockouts.
+$strings = "0xC0000064","0xC000006C","0xc000006D","0xC0000071","0xC0000072","0xC0000193","0xC0000224","0xC0000234","0xC000006A","0xC000005E"
+get-content $temp"\netlogon-combined.csv" | select-string $strings   | out-file $temp"\netlogon-strings.csv"
 
 
-select-string "0xC0000064","0xC000006C","0xc000006D","0xC0000071","0xC0000072","0xC0000193","0xC0000224","0xC0000234","0xC000006A","0xC000005E" -path "$temp\netlogon.csv" | `
-select-string -Pattern "CRITICAL" -NotMatch | export-csv $temp\netlogon-2.csv -NoTypeInformation
+$text = [io.file]::readalltext("$temp\netlogon-strings.csv")
+$text.replace("[LOGON] ","").replace("from ","").replace("SamLogon: ","").replace('"','') | out-file "$temp\$results"
 
-Import-Csv $temp\netlogon-2.csv | Select-Object -expandproperty line | Out-File $temp\netlogon-result.csv 
-Import-Csv $temp\netlogon-result.csv |export-csv $temp\netlogon-combinedresult.csv -NoTypeInformation
 
-get-childitem $temp\netlogon*.csv | ? {$_.name -ne "netlogon-combinedresult.csv"} | remove-item 
-# remove-item $temp\netlogon.txt  -Force
+#Cleans $temp directory.
+get-childitem $temp\netlogon*.csv | Where-Object {$_.name -ne $results} | remove-item 
 
+#Opens CSV file
+Invoke-Expression $temp\$results
+
+###Uncomment if you want to send results via email.
+# $to = "whoever@example.com"
+# $from = "you@example.com"
+# $mail_server = "Youremailserver.tld"
+# $port = 25
+# $subject = "Your subject here"
 
 
 # send-mailmessage -to $to -from $from -SmtpServer $mail_server -port $port `
-# -Subject $subject -Attachments $temp\netlogon-combinedresult.csv
+# -Subject $subject -Attachments $temp\$results
 
